@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+/* ==========================================================================
+   カラートークン
+   青・グレー・赤（警告のみ）以外の色は足さない。
+   ========================================================================== */
+:root{
+  color-scheme: light;
+
+  --blue-50:#E8F1FE;
+  --blue-100:#D9E6FF;
+  --blue-200:#C5D7FB;
+  --blue-300:#9DB7F9;
+  --blue-500:#4979F5;
+  --blue-700:#264AF4;
+  --blue-800:#0031D8;
+  --blue-900:#0017C1;
+  --blue-1000:#00118F;
+  --blue-1200:#000060;
+
+  --gray-50:#F2F2F2;
+  --gray-100:#E8E8E8;
+  --gray-200:#DCDCDC;
+  --gray-300:#C6C6C6;
+  --gray-600:#767676;
+  --gray-700:#4B4B4B;
+  --gray-900:#1A1A1C;
+
+  --red-50:#FDEEEE;
+  --red-800:#CE0000;
+
+  --text:var(--gray-900);
+  --text-sub:var(--gray-700);
+  --text-muted:var(--gray-600);
+  --border:var(--gray-200);
+  --border-strong:var(--gray-300);
+  --surface:var(--gray-50);
+  --bg:#FFFFFF;
+
+  --radius:8px;
+  --maxw:900px;
+}
+
+/* --------------------------------------------------------------------------
+   タイポグラフィ（游ゴシック体）
+   ウェイトは Medium(500) と Bold(700) の2種のみ使う。
+   游ゴシックは他の和文書体より見かけが小さく行間が詰まるため、
+   size-adjust と ascent/descent-override で補正した AdjustedYuGothic を先頭に置く。
+   補正値は実測に基づく調整値。
+   -------------------------------------------------------------------------- */
+@font-face{
+  font-family:"AdjustedYuGothic";
+  src:local("Yu Gothic Medium"), local("YuGothic-Medium"), local("YuGothic");
+  font-weight:400 500;
+  size-adjust:105%;
+  ascent-override:92%;
+  descent-override:8%;
+  line-gap-override:0%;
+}
+@font-face{
+  font-family:"AdjustedYuGothic";
+  src:local("Yu Gothic Bold"), local("YuGothic-Bold"), local("YuGothic");
+  font-weight:600 900;
+  size-adjust:105%;
+  ascent-override:92%;
+  descent-override:8%;
+  line-gap-override:0%;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"AdjustedYuGothic","Yu Gothic Medium","游ゴシック Medium",YuGothic,"游ゴシック体",
+              "Hiragino Sans","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  font-size:16px;
+  font-weight:500;              /* Medium */
+  line-height:1.9;
+  letter-spacing:.02em;
+  font-feature-settings:"palt";
+  /* 和文を文節単位で折り返す。非対応ブラウザは通常の折り返しになる */
+  word-break:auto-phrase;
+  line-break:strict;
+}
+strong,b,th,h1,h2,h3,h4{font-weight:700;}   /* Bold */
+
+/* ---------- レイアウト ---------- */
+.layout{display:flex;align-items:flex-start;gap:40px;max-width:1320px;margin:0 auto;padding:0 24px;}
+.toc{
+  position:sticky;top:0;flex:0 0 248px;max-height:100vh;overflow-y:auto;
+  padding:32px 0;font-size:.8125rem;line-height:1.7;
+}
+.toc__title{font-size:.75rem;font-weight:700;color:var(--text-muted);letter-spacing:.08em;margin:0 0 12px;}
+.toc > ol{list-style:none;margin:0;padding:0;counter-reset:toc;}
+.toc > ol > li{counter-increment:toc;}
+.toc a{
+  display:block;padding:6px 10px 6px 34px;color:var(--text-sub);text-decoration:none;
+  border-left:2px solid var(--border);position:relative;
+}
+.toc > ol > li > a::before{
+  content:counter(toc);position:absolute;left:10px;color:var(--text-muted);
+  font-variant-numeric:tabular-nums;font-size:.75rem;
+}
+.toc a:hover{background:var(--blue-50);color:var(--blue-900);border-left-color:var(--blue-900);}
+.toc > ol > li.toc__group{
+  counter-increment:none;font-size:.6875rem;font-weight:700;color:var(--text-muted);
+  letter-spacing:.08em;padding:20px 0 6px 10px;
+}
+.toc > ol > li.toc__group:first-child{padding-top:0;}
+.toc__sub{list-style:none;margin:0;padding:0;}
+.toc__sub a{padding:4px 10px 4px 46px;font-size:.75rem;color:var(--text-muted);}
+.toc__sub a::before{content:"–";position:absolute;left:34px;color:var(--border-strong);}
+.main{flex:1 1 auto;min-width:0;max-width:var(--maxw);padding:0 0 96px;}
+
+/* ---------- ヘッダー ---------- */
+.hero{border-top:6px solid var(--blue-900);padding:40px 0 32px;margin-bottom:8px;}
+.hero__eyebrow{font-size:.8125rem;font-weight:700;color:var(--blue-900);letter-spacing:.06em;margin:0 0 8px;}
+.hero h1{font-size:2rem;line-height:1.4;margin:0 0 16px;letter-spacing:.01em;}
+.hero__lead{font-size:1.0625rem;color:var(--text-sub);margin:0 0 24px;}
+.hero__meta{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:.8125rem;color:var(--text-muted);
+  border-top:1px solid var(--border);padding-top:16px;}
+
+/* ---------- 見出し ---------- */
+h2{
+  font-size:1.5rem;line-height:1.5;margin:64px 0 20px;padding-bottom:12px;
+  border-bottom:2px solid var(--gray-900);scroll-margin-top:24px;
+}
+h2 .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:2em;height:2em;margin-right:12px;border-radius:4px;
+  background:var(--blue-900);color:#fff;font-size:.75em;font-variant-numeric:tabular-nums;
+}
+h2 .tag{
+  float:right;font-size:.6875rem;font-weight:700;padding:3px 10px;border-radius:999px;
+  background:var(--surface);color:var(--text-muted);border:1px solid var(--border-strong);
+  margin-top:.35em;letter-spacing:.02em;
+}
+h2 .tag--on{background:var(--blue-900);color:#fff;border-color:var(--blue-900);}
+.band{
+  display:flex;align-items:center;gap:16px;margin:72px 0 -32px;
+  color:var(--blue-900);font-size:.75rem;font-weight:700;letter-spacing:.08em;
+}
+.band::before,.band::after{content:"";flex:1;height:2px;background:var(--blue-200);}
+h3{font-size:1.1875rem;margin:44px 0 12px;padding-left:12px;border-left:4px solid var(--blue-900);scroll-margin-top:24px;}
+h4{font-size:1rem;margin:28px 0 8px;color:var(--text-sub);}
+p{margin:0 0 18px;text-wrap:pretty;}
+/* 地の文だけ行長を制限する。表・図は幅いっぱいのまま */
+.main > p,.main > ul,.main > ol{max-width:46em;}
+h1,h2,h3,h4{text-wrap:balance;letter-spacing:.01em;}
+a{color:var(--blue-900);}
+
+/* ---------- 汎用パーツ ---------- */
+.lede{font-size:1.0625rem;color:var(--text-sub);}
+.note{
+  line-height:1.9;
+  border:1px solid var(--border);border-left:4px solid var(--blue-900);
+  background:var(--blue-50);border-radius:0 var(--radius) var(--radius) 0;
+  padding:16px 20px;margin:20px 0;
+}
+.note__title{font-weight:700;font-size:.875rem;color:var(--blue-1000);margin:0 0 6px;
+  display:flex;align-items:center;gap:8px;}
+.note p:last-child{margin-bottom:0;}
+.note--warn{border-left-color:var(--red-800);background:var(--red-50);}
+.note--warn .note__title{color:var(--red-800);}
+.note--plain{border-left-color:var(--gray-600);background:var(--surface);}
+.note--plain .note__title{color:var(--text-sub);}
+
+.badge{
+  display:inline-block;padding:1px 8px;border-radius:999px;font-size:.75rem;font-weight:700;
+  background:var(--blue-900);color:#fff;vertical-align:.1em;white-space:nowrap;
+}
+.badge--ghost{background:transparent;color:var(--blue-900);border:1px solid var(--blue-900);}
+.badge--gray{background:var(--gray-600);color:#fff;}
+.badge--warn{background:var(--red-800);color:#fff;}
+
+code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Yu Gothic Medium",monospace;
+  font-size:.875em;font-weight:400;letter-spacing:0;word-break:normal;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;
+}
+pre{
+  background:var(--gray-900);color:#fff;border-radius:var(--radius);
+  padding:20px 24px;overflow-x:auto;font-size:.8125rem;line-height:1.7;margin:16px 0;
+  font-weight:400;letter-spacing:0;word-break:normal;
+}
+pre code{background:none;border:none;padding:0;color:inherit;font-size:1em;}
+pre .k{color:var(--blue-300);}   /* キーワード */
+pre .c{color:var(--gray-300);font-style:italic;}  /* コメント */
+pre .hl{display:block;background:rgba(73,121,245,.22);margin:0 -24px;padding:0 24px;}
+
+/* ---------- テーブル ---------- */
+.tw{overflow-x:auto;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);}
+table{border-collapse:collapse;width:100%;font-size:.875rem;line-height:1.8;background:#fff;}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--border);}
+thead th{background:var(--surface);font-weight:700;white-space:nowrap;border-bottom:2px solid var(--border-strong);}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:none;}
+tbody th{background:var(--surface);font-weight:700;white-space:nowrap;}
+td.num,th.num{font-variant-numeric:tabular-nums;white-space:nowrap;}
+caption{caption-side:top;text-align:left;font-size:.8125rem;color:var(--text-muted);padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border);}
+
+/* マトリクス表のセル強度（青の濃度で強さを表す。4段階まで） */
+.lv0{background:#fff;}
+.lv1{background:var(--blue-50);}
+.lv2{background:var(--blue-200);}
+.lv3{background:var(--blue-900);color:#fff;font-weight:700;}
+.cell-focus{outline:3px solid var(--red-800);outline-offset:-3px;}
+
+/* ---------- ステップ / フロー ---------- */
+.pipeline{display:grid;gap:0;margin:24px 0;}
+.pipe-step{
+  display:grid;grid-template-columns:44px 1fr;gap:16px;
+  padding:16px 20px;border:1px solid var(--border);background:#fff;
+  border-radius:var(--radius);
+}
+.pipe-arrow{justify-self:center;color:var(--blue-900);font-size:1.25rem;line-height:1;padding:6px 0;}
+.pipe-num{
+  width:44px;height:44px;border-radius:50%;background:var(--blue-900);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9375rem;
+}
+.pipe-num--gray{background:var(--gray-600);}
+.pipe-body h4{margin:0 0 4px;color:var(--text);font-size:1rem;}
+.pipe-body p{margin:0;font-size:.875rem;color:var(--text-sub);}
+.pipe-body .tagline{font-size:.75rem;color:var(--text-muted);margin-top:6px;}
+
+/* ---------- カードグリッド ---------- */
+.grid{display:grid;gap:16px;margin:20px 0;}
+.grid--4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+.grid--2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.card{border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;background:#fff;}
+.card__label{font-size:.75rem;font-weight:700;color:var(--blue-900);letter-spacing:.04em;margin:0 0 4px;}
+.card__title{font-size:1.0625rem;font-weight:700;margin:0 0 8px;}
+.card p{font-size:.875rem;color:var(--text-sub);margin:0 0 10px;line-height:1.85;}
+.card p:last-child{margin-bottom:0;}
+.card__values{font-size:.8125rem;color:var(--text);border-top:1px dashed var(--border-strong);padding-top:8px;margin-top:8px;}
+
+/* ---------- 図版の枠 ---------- */
+figure{margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#fff;}
+figcaption{font-size:.8125rem;color:var(--text-sub);padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);font-weight:700;}
+.fig-body{padding:20px 16px;overflow-x:auto;}
+svg{display:block;max-width:100%;height:auto;letter-spacing:0;word-break:normal;}
+.svg-scroll{min-width:600px;}
+
+/* ---------- 引用・出力例 ---------- */
+.sample{
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  padding:16px 20px;margin:12px 0;background:var(--surface);
+  font-size:.9375rem;line-height:1.9;
+}
+.sample__head{
+  font-size:.75rem;font-weight:700;color:var(--text-muted);letter-spacing:.04em;
+  margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border-strong);
+}
+.sample--ng{background:var(--red-50);border-color:var(--red-800);}
+.sample--ng .sample__head{color:var(--red-800);border-bottom-color:var(--red-800);}
+.mark{background:var(--blue-100);padding:0 2px;border-radius:2px;}
+.mark--ng{background:#F9C9C9;padding:0 2px;border-radius:2px;font-weight:700;}
+
+ul.clean{margin:12px 0;padding-left:1.3em;}
+ul.clean li{margin-bottom:6px;}
+
+/* ---------- ファイルツリー表（任意・不要なら削除してよい） ---------- */
+.tree-tbl td:first-child{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  white-space:pre;font-size:.8125rem;line-height:1.7;padding-right:24px;
+}
+.tree-tbl td{padding-top:5px;padding-bottom:5px;border-bottom:none;}
+.tree-tbl td:last-child{color:var(--text-sub);font-size:.8125rem;line-height:1.8;}
+.tree-tbl tr.dir td:first-child{color:var(--blue-900);font-weight:700;}
+.tree-tbl tr.dir td:last-child{color:var(--text);font-weight:700;}
+.tree-tbl tr.root td{padding-top:12px;font-weight:700;color:var(--text);}
+
+/* ---------- レスポンシブ ---------- */
+@media (max-width:1100px){
+  .toc{display:none;}
+  .layout{padding:0 20px;}
+  .main{max-width:none;}
+}
+@media (max-width:600px){
+  body{font-size:15px;}
+  .hero h1{font-size:1.5rem;}
+  h2{font-size:1.25rem;}
+}
+@media print{
+  .toc{display:none;}
+  h2{page-break-after:avoid;}
+  figure,table{page-break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ====================== 目次 ====================== -->
+<nav class="toc" aria-label="目次">
+  <p class="toc__title">目次</p>
+  <ol>
+    <!--
+      章が6つを超えたら toc__group で束ねる。
+      グループ名は内容から決める。例：
+        前提 / 本題 / 参考
+        背景 / 現状 / 提案 / 判断材料
+        読む前に / 処理の本体 / 付録
+      toc__group の li は連番を消費しないので、本文の章番号とずれない。
+      h3 に飛ばすサブ項目は、章が長く迷子になる場合だけ足す。
+    -->
+    <li class="toc__group">{{GROUP_1}}</li>
+    <li><a href="#s1">{{章タイトル}}</a></li>
+
+    <li class="toc__group">{{GROUP_2}}</li>
+    <li>
+      <a href="#s2">{{章タイトル}}</a>
+      <ul class="toc__sub">
+        <li><a href="#s2-1">{{小見出し}}</a></li>
+      </ul>
+    </li>
+  </ol>
+</nav>
+
+<!-- ====================== 本文 ====================== -->
+<main class="main">
+
+<header class="hero">
+  <h1>{{TITLE}}</h1>
+  <!-- 日付等が必要なときだけ以下を足す。無くてよい。
+  <div class="hero__meta"><span>{{日付}}</span></div>
+  -->
+</header>
+
+<!-- ============ 1 ============ -->
+<h2 id="s1"><span class="num">1</span>{{章タイトル}}</h2>
+
+<p class="lede">{{この章で何が分かるか。1〜2文}}</p>
+
+
+<!-- 本体の章群を帯で挟みたいときだけ使う
+<p class="band">ここから{{何}}</p>
+-->
+
+<!-- ============ 2 ============ -->
+<h2 id="s2"><span class="num">2</span>{{章タイトル}}<span class="tag">{{属性ラベル}}</span></h2>
+
+
+</main>
+</div>
+</body>
+</html>
