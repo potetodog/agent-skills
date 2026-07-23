@@ -1,0 +1,39 @@
+# claude-code-explain-html-command
+
+Claude Code のカスタムスラッシュコマンド `/explain-html` を提供するリポジトリ。
+会話の内容やコード・ドキュメントを、チームメンバーへの共有に使える**自己完結した1枚のHTML**として出力する。
+
+## できること
+
+- この会話でまとまった検討結果を共有用HTMLにする
+- ソースコードの処理内容を、実装を追わなくても分かる形にまとめる
+- 仕様・設計を、認識をそろえるための資料として配る
+
+出力されるHTMLは外部リソース（CDN・Webフォント・画像URL）に依存せず、CSSも図（インラインSVG）も1ファイルに収まる。
+
+## 使い方
+
+```
+/explain-html [説明したい対象]
+```
+
+- 引数を省略するとこの会話の内容が対象になる
+- ファイルパスやディレクトリ（例: `app/Services/Foo`、`docs/bar/*.md`）を指定するとそれを読んで説明する
+
+## 構成
+
+```
+commands/explain-html.md              コマンド本体（手順・制約）
+templates/explain-html/template.html  出力HTMLの骨格・CSS
+templates/explain-html/components.md  部品カタログ・SVG作図の約束事
+```
+
+## インストール
+
+このリポジトリの `commands/` と `templates/` を、使いたいプロジェクトの `.claude/` 配下にコピーする。
+
+```
+.claude/commands/explain-html.md
+.claude/templates/explain-html/template.html
+.claude/templates/explain-html/components.md
+```
