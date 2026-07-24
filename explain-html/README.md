@@ -4,6 +4,10 @@
 
 [Agent Skills](https://agentskills.io/home) 形式のスキルで、`disable-model-invocation: true` を設定しているため、Claudeが自動判断で実行することはなく、`/explain-html` と明示的に呼び出したときだけ動く。手順・制約の詳細は [SKILL.md](SKILL.md) を参照。
 
+## 出力イメージ
+
+![explain-htmlが出力するHTMLのサンプル](images/sample-output.png)
+
 ## できること
 
 - この会話でまとまった検討結果を共有用HTMLにする
