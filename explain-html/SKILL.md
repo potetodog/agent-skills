@@ -1,7 +1,7 @@
 ---
 name: explain-html
 description: 説明用に自己完結した1ファイルのHTMLを作る。会話でまとまった検討結果の共有、ソースコードの処理内容の解説、仕様・設計の共有資料が必要なときに使う。
-argument-hint: [説明したい対象] 例) app/Services/Foo の処理 / docs/bar/*.md / (空欄=この会話の内容)
+argument-hint: "[説明したい対象] 例) app/Services/Foo の処理 / docs/bar/*.md / (空欄=この会話の内容)"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SendUserFile
 disable-model-invocation: true
 ---
