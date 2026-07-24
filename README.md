@@ -13,6 +13,25 @@ Claude Code向けの [Agent Skills](https://agentskills.io/home) をまとめて
 
 ## インストール
 
+### npx で入れる(推奨)
+
+[skills](https://github.com/vercel-labs/skills) CLIを使うと、ファイルを手でコピーせずインストールできる。
+
+```bash
+# プロジェクトに入れる(そのプロジェクトだけで使う)
+npx skills add potetodog/agent-skills -a claude-code -s explain-html
+
+# ルート ~/.claude に入れる(全プロジェクトで使う)
+npx skills add potetodog/agent-skills -a claude-code -s explain-html -g
+
+# 収録スキルを事前に確認したいとき
+npx skills add potetodog/agent-skills --list
+```
+
+`-s` を省略すると収録されている全スキルが対象になる。更新は `npx skills update explain-html`、削除は `npx skills remove explain-html` でできる。
+
+### 手動でコピーする
+
 使いたいスキルのディレクトリを、対象プロジェクトの `.claude/skills/` 配下にコピーする(個人用途なら `~/.claude/skills/` 配下でも可)。
 
 例: explain-html を使う場合
