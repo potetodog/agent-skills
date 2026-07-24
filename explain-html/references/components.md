@@ -154,7 +154,7 @@
   <caption>表の説明（任意）</caption>
   <thead><tr><th>項目</th><th class="num">値</th><th>意味</th></tr></thead>
   <tbody>
-    <tr><td><span class="badge">A</span></td><td class="num">≦ 6.1</td><td>説明</td></tr>
+    <tr><td><span class="badge">低</span></td><td class="num">≦ 40</td><td>説明</td></tr>
   </tbody>
 </table>
 </div>
@@ -265,29 +265,29 @@ OK例とNG例は必ず並べる。片方だけだと基準が伝わらない。
 
 ```html
 <figure>
-  <figcaption>図N：区切り（0〜10）</figcaption>
+  <figcaption>図N：区切り（0〜100）</figcaption>
   <div class="fig-body">
-  <svg viewBox="0 0 720 170" role="img" aria-label="6.1以下がA、6.1超8.4未満がB、8.4以上がC" class="svg-scroll">
+  <svg viewBox="0 0 720 170" role="img" aria-label="40未満が低、40以上70未満が中、70以上が高" class="svg-scroll">
     <rect x="40" y="46" width="252" height="46" fill="#0017C1"/>
     <rect x="292" y="46" width="184" height="46" fill="#9DB7F9"/>
     <rect x="476" y="46" width="204" height="46" fill="#E8F1FE"/>
     <rect x="40" y="46" width="640" height="46" fill="none" stroke="#C6C6C6"/>
 
-    <text x="166" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">A</text>
+    <text x="166" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">低</text>
     <text x="166" y="85" text-anchor="middle" font-size="11" fill="#C5D7FB">補足</text>
-    <text x="384" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1C">B</text>
-    <text x="578" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1C">C</text>
+    <text x="384" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1C">中</text>
+    <text x="578" y="68" text-anchor="middle" font-size="14" font-weight="700" fill="#1A1A1C">高</text>
 
     <line x1="40" y1="104" x2="680" y2="104" stroke="#767676"/>
     <g font-size="12" fill="#4B4B4B" font-family="ui-monospace,monospace">
       <line x1="40" y1="104" x2="40" y2="112" stroke="#767676"/><text x="40" y="128" text-anchor="middle">0</text>
       <line x1="292" y1="104" x2="292" y2="116" stroke="#0017C1" stroke-width="2"/>
-      <text x="292" y="132" text-anchor="middle" font-weight="700" fill="#0017C1">6.1</text>
-      <line x1="680" y1="104" x2="680" y2="112" stroke="#767676"/><text x="680" y="128" text-anchor="middle">10</text>
+      <text x="292" y="132" text-anchor="middle" font-weight="700" fill="#0017C1">40</text>
+      <line x1="680" y1="104" x2="680" y2="112" stroke="#767676"/><text x="680" y="128" text-anchor="middle">100</text>
     </g>
 
     <text x="40" y="30" font-size="12" fill="#4B4B4B">左上に軸の意味</text>
-    <text x="292" y="152" text-anchor="middle" font-size="11" fill="#767676">6.1ちょうどはA</text>
+    <text x="292" y="152" text-anchor="middle" font-size="11" fill="#767676">40ちょうどは低</text>
   </svg>
   </div>
 </figure>
@@ -359,10 +359,10 @@ OK例とNG例は必ず並べる。片方だけだと基準が伝わらない。
 
 # 書き方のルール
 
-- **記号を名前にしない。** `Z`, `x`, `L1` のような略号は、その場で意味の分かる日本語に置き換える。
+- **記号を名前にしない。** 記号・略号・変数名は、その場で意味の分かる日本語に置き換える。
   数式が必要なら図の中で1回だけ示し、本文では言葉で書く。
-- **数字を入れる。** 「しきい値を超えたら」ではなく「6.1以下なら」。抽象的な説明より具体値1つ。
-- **境界値の扱いを必ず書く。** 「6.1ちょうどはどちらか」を書いていない図は不完全。
+- **数字を入れる。** 「しきい値を超えたら」ではなく「40以下なら」。抽象的な説明より具体値1つ。
+- **境界値の扱いを必ず書く。** 「40ちょうどはどちらか」を書いていない図は不完全。
 - **1章に図は1〜2枚。** それ以上必要なら章を割る。
 - **段落は4文まで。** 5文以上になるなら文の切れ目で `<br>` を入れるか、段落を割る。
 - **人名を使わない。** 「田中さん」ではなく「ある社員」「ケースA」。

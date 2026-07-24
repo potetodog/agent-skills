@@ -1,62 +1,31 @@
-# claude-code-explain-html-command
+# agent-skills
 
-Claude Code のカスタムスラッシュコマンド `/explain-html` を提供するリポジトリ。
-会話の内容やコード・ドキュメントを、チームメンバーへの共有に使える**自己完結した1枚のHTML**として出力する。
+Claude Code向けの [Agent Skills](https://agentskills.io/home) をまとめて管理するリポジトリ。
+各スキルは直下の専用ディレクトリに `SKILL.md` を持ち、それぞれ独立してインストール・利用できる。
 
-## できること
+## スキル一覧
 
-- この会話でまとまった検討結果を共有用HTMLにする
-- ソースコードの処理内容を、実装を追わなくても分かる形にまとめる
-- 仕様・設計を、認識をそろえるための資料として配る
+| スキル | 説明 |
+| --- | --- |
+| [explain-html](explain-html/) | 会話やコードの内容を、チームメンバー共有用の自己完結した1枚のHTMLにまとめる |
 
-出力されるHTMLは外部リソース（CDN・Webフォント・画像URL）に依存せず、CSSも図（インラインSVG）も1ファイルに収まる。
-
-## 使い方
-
-```
-/explain-html [説明したい対象]
-```
-
-- 引数を省略するとこの会話の内容が対象になる
-- ファイルパスやディレクトリ（例: `app/Services/Foo`、`docs/bar/*.md`）を指定するとそれを読んで説明する
-- 機能名や仕組みを日本語で書くと、該当するコードを探した上で説明する
-
-### 例
-
-```
-/explain-html
-```
-直前までの会話でまとまった検討結果を、そのままHTMLにする。
-
-```
-/explain-html app/Services/PaymentService
-```
-指定したファイルの処理内容を、実装を追わなくても分かる形にまとめる。
-
-```
-/explain-html docs/api/*.md
-```
-複数のドキュメントをまとめて読み込み、1つのHTMLに整理する。
-
-```
-/explain-html 会員登録の仕組み
-```
-該当しそうなコードをリポジトリから探し、処理の流れを図解付きで説明する。
-
-## 構成
-
-```
-commands/explain-html.md              コマンド本体（手順・制約）
-templates/explain-html/template.html  出力HTMLの骨格・CSS
-templates/explain-html/components.md  部品カタログ・SVG作図の約束事
-```
+各スキルの詳細は、リンク先ディレクトリのREADME・SKILL.mdを参照。
 
 ## インストール
 
-このリポジトリの `commands/` と `templates/` を、使いたいプロジェクトの `.claude/` 配下にコピーする。
+使いたいスキルのディレクトリを、対象プロジェクトの `.claude/skills/` 配下にコピーする(個人用途なら `~/.claude/skills/` 配下でも可)。
+
+例: explain-html を使う場合
 
 ```
-.claude/commands/explain-html.md
-.claude/templates/explain-html/template.html
-.claude/templates/explain-html/components.md
+.claude/skills/explain-html/SKILL.md
+.claude/skills/explain-html/assets/template.html
+.claude/skills/explain-html/references/components.md
 ```
+
+## 新しいスキルを追加する
+
+1. リポジトリ直下に `<skill-name>/` ディレクトリを作成し `SKILL.md` を置く(`name` フィールドはディレクトリ名と一致させる)
+2. 必要に応じて `assets/`(テンプレート等)、`references/`(詳細ドキュメント)を追加する
+3. SKILL.mdだけで伝わらない人間向けの説明(使い方の例、スクリーンショットなど)があれば、そのディレクトリに個別のREADME.mdを追加する
+4. このREADMEの「スキル一覧」に1行追加する

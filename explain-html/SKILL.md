@@ -1,14 +1,16 @@
 ---
-description: 説明用の1ファイルHTMLを作る（青基調・游ゴシック・図解重視）
+name: explain-html
+description: 説明用に自己完結した1ファイルのHTMLを作る。会話でまとまった検討結果の共有、ソースコードの処理内容の解説、仕様・設計の共有資料が必要なときに使う。
 argument-hint: [説明したい対象] 例) app/Services/Foo の処理 / docs/bar/*.md / (空欄=この会話の内容)
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SendUserFile
+disable-model-invocation: true
 ---
 
 チームメンバーに何かを説明するための、**自己完結した1ファイルのHTML**を作る。
 
 対象: $ARGUMENTS
 
-## これは何のためのコマンドか
+## これは何のためのスキルか
 
 仕様書とは限らない。想定する用途は次のどれか。
 
@@ -20,8 +22,8 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SendUserFile
 
 ## 素材
 
-- `.claude/templates/explain-html/template.html` — CSS込みの骨格。**CSSは1文字も変えずに丸ごとコピーする**
-- `.claude/templates/explain-html/components.md` — 部品カタログとSVG作図の約束事
+- `assets/template.html` — CSS込みの骨格。**CSSは1文字も変えずに丸ごとコピーする**
+- `references/components.md` — 部品カタログとSVG作図の約束事
 
 最初にこの2つを読む。CSSを自作しない。カタログにない見た目を作らない。
 
@@ -63,12 +65,12 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, SendUserFile
 
 `components.md` の「書き方のルール」に従う。特に外せないもの:
 
-- **略号を使わない。** 元資料に `Z` `L1` `x軸` があっても、その場で意味の分かる日本語に置き換える
-- **具体値を入れる。** 「しきい値以上なら」ではなく「8.4以上なら」。抽象論より数字1つ
+- **略号を使わない。** 元資料に記号・略号・変数名があっても、その場で意味の分かる日本語に置き換える
+- **具体値を入れる。** 「しきい値以上なら」ではなく「70以上なら」。抽象論より数字1つ
 - **図は分岐・順序・比較のあるところに入れる。** 箇条書きで足りるものを図にしない
 - **1章に図は1〜2枚**、SVGの `marker id` は図ごとに別名
 - **段落は4文まで。** 超えるなら文の切れ目で `<br>` を入れるか段落を割る
-- 人名（田中さんなど）を出さない。「ケースA」「ある社員」にする
+- 人名を出さない。「ケースA」「ある社員」にする
 - 未確定事項は、確定として書けるならそう書く。書けないなら `note--warn` で1箇所にまとめる
 
 決めきれない値やロジックの矛盾に気づいたら、**黙って辻褄を合わせない**。
@@ -104,7 +106,7 @@ JavaScript を入れた場合は `node --check` も通す。ただし**動くも
 ### 5. 渡す
 
 `SendUserFile` で `display: "render"` を付けて送る。
-あわせて、**骨格をどう決めたか**と、**自分の判断で埋めた箇所**を本文で報告する。
+あわせて、**骨格をどう決めたか**と、**自分の判断で埋めた箇所**を本文で端的に報告する。
 
 ---
 
