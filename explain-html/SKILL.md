@@ -89,15 +89,17 @@ for t in div table tr td p main figure svg; do
 done
 
 # 目次のリンク切れ（出力が空なら正常）
-grep -o 'href="#[^"]*"' "$F" | sed 's/href="#\(.*\)"/\1/' | sort -u > /tmp/eh-href.txt
-grep -o 'id="[^"]*"' "$F" | sed 's/id="\(.*\)"/\1/' | sort -u > /tmp/eh-id.txt
-comm -23 /tmp/eh-href.txt /tmp/eh-id.txt
+HREF_FILE=$(mktemp); ID_FILE=$(mktemp)
+grep -o 'href="#[^"]*"' "$F" | sed 's/href="#\(.*\)"/\1/' | sort -u > "$HREF_FILE"
+grep -o 'id="[^"]*"' "$F" | sed 's/id="\(.*\)"/\1/' | sort -u > "$ID_FILE"
+comm -23 "$HREF_FILE" "$ID_FILE"
 
 # SVGのmarker id重複（出力が空なら正常）
 grep -o '<marker id="[^"]*"' "$F" | sort | uniq -d
 
-# 外部リクエストの混入（出力が空なら正常。自己完結が絶対条件）
-grep -oE '(src|href)="https?://[^"]*"' "$F" | grep -v '^href="#'
+# 外部リクエストの混入（出力が空なら正常。自己完結が絶対条件。属性経由とCSS url()経由の両方を見る）
+grep -oE '(src|href)="https?://[^"]*"' "$F"
+grep -oE 'url\(\s*["'"'"']?https?://[^)]*\)' "$F"
 ```
 
 JavaScript を入れた場合は `node --check` も通す。ただし**動くものを埋め込むのは原則不要**。
@@ -112,7 +114,7 @@ JavaScript を入れた場合は `node --check` も通す。ただし**動くも
 
 ## デザインの制約（変えない）
 
-- **色は青・グレー・赤のみ。** 赤は警告専用。緑・黄・紫を足さない。強さは青の濃淡（`lv0`〜`lv3`）で表す
+- **色は青・グレー・赤のみ。** 赤は警告と、特定セルへの注目喚起（`cell-focus`）にだけ使う。緑・黄・紫を足さない。強さ・優先度・危険度は青の濃淡（`lv0`〜`lv3`）で表す
 - **ダークモード非対応。** `prefers-color-scheme` を書かない
 - **影を使わない。** 階層は罫線と背景色の差で表す
 - **フォントは游ゴシック、ウェイトは500と700のみ**
