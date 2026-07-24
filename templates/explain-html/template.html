@@ -117,6 +117,9 @@ strong,b,th,h1,h2,h3,h4{font-weight:700;}   /* Bold */
 .toc__sub{list-style:none;margin:0;padding:0;}
 .toc__sub a{padding:4px 10px 4px 46px;font-size:.75rem;color:var(--text-muted);}
 .toc__sub a::before{content:"–";position:absolute;left:34px;color:var(--border-strong);}
+/* 閲覧中の章（IntersectionObserverでJSから付け外しする） */
+.toc a.is-active{background:var(--blue-50);color:var(--blue-900);border-left-color:var(--blue-900);font-weight:700;}
+.toc > ol > li > a.is-active::before{color:var(--blue-900);}
 .main{flex:1 1 auto;min-width:0;max-width:var(--maxw);padding:0 0 96px;}
 
 /* ---------- ヘッダー ---------- */
@@ -351,5 +354,51 @@ ul.clean li{margin-bottom:6px;}
 
 </main>
 </div>
+
+<!-- ====================== 目次：現在地ハイライト ====================== -->
+<script>
+(function(){
+  var toc=document.querySelector(".toc");
+  if(!toc)return;
+
+  var links={};
+  toc.querySelectorAll('a[href^="#"]').forEach(function(a){
+    links[a.getAttribute("href").slice(1)]=a;
+  });
+
+  var headings=Array.prototype.filter.call(
+    document.querySelectorAll(".main h2[id], .main h3[id]"),
+    function(h){return links[h.id];}
+  );
+  if(!headings.length)return;
+
+  var active=null;
+  function setActive(id){
+    if(id===active)return;
+    if(active&&links[active])links[active].classList.remove("is-active");
+    if(id&&links[id]){
+      links[id].classList.add("is-active");
+      links[id].scrollIntoView({block:"nearest"});
+    }
+    active=id;
+  }
+
+  var visible={};
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){visible[e.target.id]=e.isIntersecting;});
+    var current=null;
+    headings.forEach(function(h){if(visible[h.id])current=h.id;});
+    if(current)setActive(current);
+  },{rootMargin:"-15% 0px -70% 0px"});
+  headings.forEach(function(h){io.observe(h);});
+
+  window.addEventListener("scroll",function(){
+    if(window.innerHeight+Math.ceil(window.scrollY)>=document.body.scrollHeight){
+      setActive(headings[headings.length-1].id);
+    }
+  },{passive:true});
+})();
+</script>
+
 </body>
 </html>
