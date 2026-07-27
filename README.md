@@ -8,6 +8,7 @@ Claude Code向けの [Agent Skills](https://agentskills.io/home) をまとめて
 | スキル | 説明 |
 | --- | --- |
 | [explain-html](explain-html/) | 会話やコードの内容を、チームメンバー共有用の自己完結した1枚のHTMLにまとめる |
+| [qa-sheet](qa-sheet/) | 現在のブランチとmainの差分からQA観点を洗い出し、スプレッドシート貼り付け用のTSV形式でQA項目書を自動生成する |
 
 各スキルの詳細は、リンク先ディレクトリのREADME・SKILL.mdを参照。
 
