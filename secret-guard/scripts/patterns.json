@@ -1,0 +1,32 @@
+{
+  "_comment": "protected_paths / secret_patterns はテキスト内の部分一致で検知する。allowed_patterns はマッチした文字列全体に対する完全一致 (grep -x) で適用されるため、実シークレットの一部にプレースホルダ風の文字列が含まれていても素通しにならない。",
+  "protected_paths": [
+    "(^|[^A-Za-z0-9_])\\.env(\\.[A-Za-z0-9_-]+)*([^A-Za-z0-9_.-]|$)",
+    "\\.aws/credentials",
+    "\\.ssh/id_[A-Za-z0-9._-]+",
+    "\\.netrc",
+    "\\.git-credentials",
+    "\\.pypirc",
+    "\\.docker/config\\.json",
+    "\\.kube/config",
+    "(^|/)secrets?\\.(json|ya?ml|toml)"
+  ],
+  "secret_patterns": [
+    { "name": "aws-access-key-id", "regex": "(AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16}" },
+    { "name": "github-token", "regex": "gh[pousr]_[A-Za-z0-9]{36,}" },
+    { "name": "github-fine-grained-pat", "regex": "github_pat_[A-Za-z0-9_]{22,}" },
+    { "name": "anthropic-api-key", "regex": "sk-ant-[A-Za-z0-9_-]{20,}" },
+    { "name": "openai-api-key", "regex": "sk-(proj-)?[A-Za-z0-9_-]{20,}" },
+    { "name": "google-api-key", "regex": "AIza[0-9A-Za-z_-]{35}" },
+    { "name": "slack-token", "regex": "xox[baprs]-[A-Za-z0-9-]{10,}" },
+    { "name": "stripe-key", "regex": "(sk|rk)_(live|test)_[A-Za-z0-9]{20,}" },
+    { "name": "private-key-block", "regex": "-----BEGIN [A-Z ]*PRIVATE KEY-----" },
+    { "name": "jwt", "regex": "eyJ[A-Za-z0-9_-]{10,}\\.eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}" }
+  ],
+  "allowed_patterns": [
+    ".*\\.env\\.(example|sample|template|dist)([^A-Za-z0-9_.-].*)?",
+    "AKIAIOSFODNN7EXAMPLE",
+    "([A-Za-z0-9]{1,10}[-_])*[xX*.]{4,}",
+    "([A-Za-z]+[-_])*(your|dummy|sample|placeholder|example)([-_][A-Za-z]+)*"
+  ]
+}

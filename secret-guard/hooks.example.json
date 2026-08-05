@@ -1,0 +1,31 @@
+{
+  "_comment": "settings.json（~/.claude/settings.json またはプロジェクトの .claude/settings.json）にマージするスニペット。command のパスは guard.sh の絶対パスに置き換え、この _comment キーは取り込まないこと。既存の permissions / hooks がある場合は上書きせず要素を追記する。deny は .env.example 等の共有用ファイルを読めるよう、実値が入る代表的なファイル名の列挙にしている（その他の変種はフック側の層が塞ぐ）。",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./.env.development)",
+      "Read(./.env.production)",
+      "Read(./.env.staging)",
+      "Read(./.env.test)",
+      "Read(~/.aws/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.netrc)",
+      "Read(~/.git-credentials)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Edit|Write|WebFetch|Grep|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/ABSOLUTE/PATH/TO/agent-skills/secret-guard/scripts/guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
