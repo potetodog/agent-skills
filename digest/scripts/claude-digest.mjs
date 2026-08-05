@@ -51,6 +51,15 @@ function sinceToDate(spec) {
   return new Date(Date.now() - n * ms);
 }
 
+// 壊れたsymlinkや走査中に消えたファイルで全体が落ちないよう、statの失敗はスキップ扱いにする
+function statOrNull(p) {
+  try {
+    return fs.statSync(p);
+  } catch {
+    return null;
+  }
+}
+
 function projectLabel(dirName) {
   return dirName
     .replace(/^-Users-[^-]+-Project-/, "")
@@ -68,11 +77,18 @@ function* iterSessionFiles(cutoff, opts) {
     const label = projectLabel(dir);
     if (opts.project && !label.includes(opts.project)) continue;
     const full = path.join(PROJECTS_DIR, dir);
-    if (!fs.statSync(full).isDirectory()) continue;
-    for (const f of fs.readdirSync(full)) {
+    if (!statOrNull(full)?.isDirectory()) continue;
+    let files;
+    try {
+      files = fs.readdirSync(full);
+    } catch {
+      continue;
+    }
+    for (const f of files) {
       if (!f.endsWith(".jsonl")) continue;
       const fp = path.join(full, f);
-      if (fs.statSync(fp).mtime < cutoff) continue;
+      const st = statOrNull(fp);
+      if (!st || st.mtime < cutoff) continue;
       yield { fp, project: label, session: f.slice(0, 8) };
     }
   }
@@ -113,9 +129,17 @@ function extract(cutoff, opts) {
       for (let t of texts) {
         t = t.trim();
         if (!t) continue;
-        const cmd = t.startsWith("<command-")
-          ? /<command-name>(\/[\w:-]+)<\/command-name>/.exec(t)
-          : /^(\/[\w:-]+)\s*$/.exec(t);
+        if (t.startsWith("<command-")) {
+          // command-name が取れなくても、コマンド実行のXMLレコードをプロンプト集計に流さない
+          const m = /<command-name>\s*([^<]+?)\s*<\/command-name>/.exec(t);
+          if (m) {
+            commands.push({ cmd: m[1], project, session });
+            sessions.add(`${project}/${session}`);
+            projects.add(project);
+          }
+          continue;
+        }
+        const cmd = /^(\/[\w:-]+)\s*$/.exec(t);
         if (cmd) {
           commands.push({ cmd: cmd[1], project, session });
           sessions.add(`${project}/${session}`);
@@ -181,6 +205,8 @@ function cluster(prompts) {
       if (score > bestScore) {
         bestScore = score;
         best = c;
+        // 0.5で採用が確定するので全クラスタの走査は打ち切る(最良ではなく最初の合格を採る)
+        if (bestScore >= 0.5) break;
       }
     }
     if (best && bestScore >= 0.5) best.members.push(item);
@@ -189,19 +215,25 @@ function cluster(prompts) {
   return clusters;
 }
 
+function tally(pairs) {
+  const m = new Map();
+  for (const [key, project] of pairs) {
+    if (!m.has(key)) m.set(key, { count: 0, projects: new Set() });
+    const e = m.get(key);
+    e.count++;
+    e.projects.add(project);
+  }
+  return [...m.entries()].sort((a, b) => b[1].count - a[1].count);
+}
+
 function countErrors(prompts) {
-  const sig = new Map();
+  const pairs = [];
   for (const p of prompts) {
     const found = p.text.match(/\b[A-Z][A-Za-z]{2,}(?:Exception|Error)\b/g);
     if (!found) continue;
-    for (const s of new Set(found)) {
-      if (!sig.has(s)) sig.set(s, { count: 0, projects: new Set() });
-      const e = sig.get(s);
-      e.count++;
-      e.projects.add(p.project);
-    }
+    for (const s of new Set(found)) pairs.push([s, p.project]);
   }
-  return [...sig.entries()].sort((a, b) => b[1].count - a[1].count);
+  return tally(pairs);
 }
 
 function fmtDate(d) {
@@ -231,18 +263,11 @@ function report(data, opts, cutoff) {
   w(`| 承認・相槌 | ${ackCount} |`);
   w();
 
-  const cmdCount = new Map();
-  for (const c of commands) {
-    if (!cmdCount.has(c.cmd)) cmdCount.set(c.cmd, { count: 0, projects: new Set() });
-    const e = cmdCount.get(c.cmd);
-    e.count++;
-    e.projects.add(c.project);
-  }
   w(`## スラッシュコマンド使用回数`);
   w();
   w(`| コマンド | 回数 | プロジェクト |`);
   w(`|---|---|---|`);
-  for (const [cmd, e] of [...cmdCount.entries()].sort((a, b) => b[1].count - a[1].count)) {
+  for (const [cmd, e] of tally(commands.map((c) => [c.cmd, c.project]))) {
     w(`| ${cmd} | ${e.count} | ${[...e.projects].join(", ")} |`);
   }
   w();
