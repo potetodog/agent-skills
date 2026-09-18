@@ -1,5 +1,5 @@
 ---
-name: Create Testcase
+name: create-testcase
 description: セッション内の作業内容から仕様を推測し、テストケースを洗い出してテストを作成する。
 disable-model-invocation: true
 ---
